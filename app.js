@@ -4,6 +4,8 @@ import express from "express";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { prisma } from "./lib/prisma.js";
+import passport from "./config/passport.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
@@ -25,9 +27,17 @@ app.use(
   })
 );
 
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
+
+app.use(authRouter);
+
 app.get("/", (req, res) => {
-  req.session.visits = (req.session.visits || 0) + 1;
-  res.send(`Visits this session: ${req.session.visits}`);
+  res.render("index");
 });
 
 const PORT = process.env.PORT || 3000;

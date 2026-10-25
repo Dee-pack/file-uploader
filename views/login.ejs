@@ -1,0 +1,10 @@
+<h1>Log in</h1>
+<% errors.forEach((e)=> { %><p style="color:red">
+        <%= e.msg %>
+    </p>
+    <% }) %>
+        <form action="/login" method="POST">
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Password" required />
+            <button>Log in</button>
+        </form>
