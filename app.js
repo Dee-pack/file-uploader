@@ -6,6 +6,7 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { prisma } from "./lib/prisma.js";
 import passport from "./config/passport.js";
 import authRouter from "./routes/auth.js";
+import filesRouter from "./routes/files.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.use(authRouter);
+app.use(filesRouter);
 
 app.get("/", (req, res) => {
   res.render("index");

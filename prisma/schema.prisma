@@ -16,6 +16,7 @@ model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
+  files    File[]
 }
 
 model Session {
@@ -23,4 +24,15 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt DateTime
+}
+
+model File {
+  id         Int      @id @default(autoincrement())
+  name       String
+  storedName String
+  mimeType   String
+  size       Int
+  uploadedAt DateTime @default(now())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

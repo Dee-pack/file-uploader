@@ -1,0 +1,26 @@
+<h1>Upload a file</h1>
+<a href="/">Home</a>
+
+<% if (error) { %>
+    <p style="color:red">
+        <%= error %>
+    </p>
+    <% } %>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required />
+            <button>Upload</button>
+        </form>
+
+        <h2>Your files</h2>
+        <% if (files.length===0) { %>
+            <p>No files yet.</p>
+            <% } else { %>
+                <ul>
+                    <% files.forEach((f)=> { %>
+                        <li>
+                            <%= f.name %> (<%= f.size %> bytes)
+                        </li>
+                        <% }) %>
+                </ul>
+                <% } %>

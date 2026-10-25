@@ -1,7 +1,9 @@
 <h1>File Uploader</h1>
 <% if (currentUser) { %>
-  <p>Signed in as <%= currentUser.email %></p>
+  <p>Signed in as <%= currentUser.email %>
+  </p>
+  <a href="/upload">Upload files</a>
   <form action="/logout" method="POST"><button>Log out</button></form>
-<% } else { %>
-  <a href="/login">Log in</a> | <a href="/sign-up">Sign up</a>
-<% } %>
+  <% } else { %>
+    <a href="/login">Log in</a> | <a href="/sign-up">Sign up</a>
+    <% } %>
