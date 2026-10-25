@@ -34,7 +34,7 @@ model Folder {
 model File {
   id         Int      @id @default(autoincrement())
   name       String
-  storedName String
+  storagePath String
   mimeType   String
   size       Int
   uploadedAt DateTime @default(now())

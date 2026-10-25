@@ -1,37 +1,44 @@
-import path from "node:path";
 import { Router } from "express";
 import { ensureAuth } from "../middleware/auth.js";
-import { upload, uploadDir } from "../config/multer.js";
+import { upload } from "../config/multer.js";
+import { uploadFile, getDownloadUrl, removeFiles } from "../lib/storage.js";
 import { prisma } from "../lib/prisma.js";
 
 const router = Router();
 
-router.get("/upload", ensureAuth, async (req, res) => {
-    const files = await prisma.file.findMany({
-        where: { userId: req.user.id },
+async function listUnfiled(userId) {
+    return prisma.file.findMany({
+        where: { userId },
         orderBy: { uploadedAt: "desc" },
     });
-    res.render("upload", { files, error: null });
+}
+
+router.get("/upload", ensureAuth, async (req, res) => {
+    res.render("upload", { files: await listUnfiled(req.user.id), error: null });
 });
 
 router.post("/upload", ensureAuth, upload.single("file"), async (req, res) => {
     if (!req.file) {
-        const files = await prisma.file.findMany({
-            where: { userId: req.user.id },
-            orderBy: { uploadedAt: "desc" },
-        });
+        const files = await listUnfiled(req.user.id);
         return res.status(400).render("upload", { files, error: "Please choose a file." });
     }
 
-    await prisma.file.create({
-        data: {
-            name: req.file.originalname,
-            storedName: req.file.filename,
-            mimeType: req.file.mimetype,
-            size: req.file.size,
-            userId: req.user.id,
-        },
-    });
+    const storagePath = await uploadFile(req.user.id, req.file);
+
+    try {
+        await prisma.file.create({
+            data: {
+                name: req.file.originalname,
+                storagePath,
+                mimeType: req.file.mimetype,
+                size: req.file.size,
+                userId: req.user.id,
+            },
+        });
+    } catch (err) {
+        await removeFiles([storagePath]); // don't leave an orphan in the bucket
+        throw err;
+    }
 
     res.redirect("/upload");
 });
@@ -47,23 +54,17 @@ async function loadFile(req, res, next) {
     });
     if (!file) return res.status(404).send("File not found");
 
-    req.file = file;
+    req.fileRecord = file;
     next();
 }
 
 router.get("/files/:id", ensureAuth, loadFile, (req, res) => {
-    res.render("file", { file: req.file });
+    res.render("file", { file: req.fileRecord });
 });
 
-router.get("/files/:id/download", ensureAuth, loadFile, (req, res, next) => {
-    const filePath = path.join(uploadDir, req.file.storedName);
-
-    // The second argument sets the download name to the original filename
-    res.download(filePath, req.file.name, (err) => {
-        if (err && !res.headersSent) {
-            return err.code === "ENOENT" ? res.status(404).send("File missing from storage") : next(err);
-        }
-    });
+router.get("/files/:id/download", ensureAuth, loadFile, async (req, res) => {
+    const url = await getDownloadUrl(req.fileRecord.storagePath, req.fileRecord.name);
+    res.redirect(url);
 });
 
 export default router;

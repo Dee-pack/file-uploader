@@ -1,9 +1,8 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { ensureAuth } from "../middleware/auth.js";
-import { upload, uploadDir } from "../config/multer.js";
+import { upload } from "../config/multer.js";
+import { uploadFile, removeFiles } from "../lib/storage.js";
 import { prisma } from "../lib/prisma.js";
 
 const router = Router();
@@ -95,12 +94,11 @@ router.post("/folders/:id/rename", loadFolder, nameRule, async (req, res) => {
 router.post("/folders/:id/delete", loadFolder, async (req, res) => {
     const files = await prisma.file.findMany({
         where: { folderId: req.folder.id, userId: req.user.id },
+        select: { storagePath: true },
     });
 
-    // Cascade removes the DB rows, but the files on disk must be removed by us
-    await Promise.all(
-        files.map((f) => fs.rm(path.join(uploadDir, f.storedName), { force: true }))
-    );
+    // Remove from the bucket first; if that fails, the folder stays and you can retry
+    await removeFiles(files.map((f) => f.storagePath));
 
     await prisma.folder.delete({ where: { id: req.folder.id } });
     res.redirect("/folders");
@@ -110,16 +108,24 @@ router.post("/folders/:id/delete", loadFolder, async (req, res) => {
 router.post("/folders/:id/upload", loadFolder, upload.single("file"), async (req, res) => {
     if (!req.file) return renderFolder(req, res, [{ msg: "Please choose a file." }], 400);
 
-    await prisma.file.create({
-        data: {
-            name: req.file.originalname,
-            storedName: req.file.filename,
-            mimeType: req.file.mimetype,
-            size: req.file.size,
-            userId: req.user.id,
-            folderId: req.folder.id,
-        },
-    });
+    const storagePath = await uploadFile(req.user.id, req.file);
+
+    try {
+        await prisma.file.create({
+            data: {
+                name: req.file.originalname,
+                storagePath,
+                mimeType: req.file.mimetype,
+                size: req.file.size,
+                userId: req.user.id,
+                folderId: req.folder.id,
+            },
+        });
+    } catch (err) {
+        await removeFiles([storagePath]);
+        throw err;
+    }
+
     res.redirect(`/folders/${req.folder.id}`);
 });
 
