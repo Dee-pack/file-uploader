@@ -19,7 +19,10 @@
                 <ul>
                     <% files.forEach((f)=> { %>
                         <li>
-                            <%= f.name %> (<%= f.size %> bytes)
+                            <a href="/files/<%= f.id %>">
+                                <%= f.name %>
+                            </a>
+                            (<%= formatBytes(f.size) %>)
                         </li>
                         <% }) %>
                 </ul>

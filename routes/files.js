@@ -1,6 +1,7 @@
+import path from "node:path";
 import { Router } from "express";
 import { ensureAuth } from "../middleware/auth.js";
-import { upload } from "../config/multer.js";
+import { upload, uploadDir } from "../config/multer.js";
 import { prisma } from "../lib/prisma.js";
 
 const router = Router();
@@ -33,6 +34,36 @@ router.post("/upload", ensureAuth, upload.single("file"), async (req, res) => {
     });
 
     res.redirect("/upload");
+});
+
+// Loads the file only if it belongs to the logged-in user
+async function loadFile(req, res, next) {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(404).send("File not found");
+
+    const file = await prisma.file.findFirst({
+        where: { id, userId: req.user.id },
+        include: { folder: true },
+    });
+    if (!file) return res.status(404).send("File not found");
+
+    req.file = file;
+    next();
+}
+
+router.get("/files/:id", ensureAuth, loadFile, (req, res) => {
+    res.render("file", { file: req.file });
+});
+
+router.get("/files/:id/download", ensureAuth, loadFile, (req, res, next) => {
+    const filePath = path.join(uploadDir, req.file.storedName);
+
+    // The second argument sets the download name to the original filename
+    res.download(filePath, req.file.name, (err) => {
+        if (err && !res.headersSent) {
+            return err.code === "ENOENT" ? res.status(404).send("File missing from storage") : next(err);
+        }
+    });
 });
 
 export default router;

@@ -8,8 +8,11 @@ import passport from "./config/passport.js";
 import authRouter from "./routes/auth.js";
 import filesRouter from "./routes/files.js";
 import foldersRouter from "./routes/folders.js";
+import { formatBytes } from "./lib/format.js";
+
 
 const app = express();
+app.locals.formatBytes = formatBytes;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(import.meta.dirname, "views"));

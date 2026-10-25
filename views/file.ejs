@@ -1,0 +1,44 @@
+<h1>
+    <%= file.name %>
+</h1>
+
+<% if (file.folder) { %>
+    <a href="/folders/<%= file.folder.id %>">&larr; Back to <%= file.folder.name %></a>
+    <% } else { %>
+        <a href="/upload">&larr; Back to uploads</a>
+        <% } %>
+
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <%= file.name %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Size</th>
+                    <td>
+                        <%= formatBytes(file.size) %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Type</th>
+                    <td>
+                        <%= file.mimeType %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Uploaded</th>
+                    <td>
+                        <%= file.uploadedAt.toLocaleString() %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Folder</th>
+                    <td>
+                        <%= file.folder ? file.folder.name : "None" %>
+                    </td>
+                </tr>
+            </table>
+
+            <p><a href="/files/<%= file.id %>/download"><button>Download</button></a></p>
