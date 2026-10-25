@@ -2,6 +2,7 @@
 <% if (currentUser) { %>
   <p>Signed in as <%= currentUser.email %>
   </p>
+  <a href="/folders">My folders</a>
   <a href="/upload">Upload files</a>
   <form action="/logout" method="POST"><button>Log out</button></form>
   <% } else { %>

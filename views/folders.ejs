@@ -1,0 +1,27 @@
+<h1>Your folders</h1>
+<a href="/">Home</a>
+
+<% errors.forEach((e)=> { %><p style="color:red">
+        <%= e.msg %>
+    </p>
+    <% }) %>
+
+        <form action="/folders" method="POST">
+            <input type="text" name="name" placeholder="New folder name" maxlength="50" required />
+            <button>Create folder</button>
+        </form>
+
+        <% if (folders.length===0) { %>
+            <p>No folders yet.</p>
+            <% } else { %>
+                <ul>
+                    <% folders.forEach((f)=> { %>
+                        <li>
+                            <a href="/folders/<%= f.id %>">
+                                <%= f.name %>
+                            </a>
+                            (<%= f._count.files %> files)
+                        </li>
+                        <% }) %>
+                </ul>
+                <% } %>

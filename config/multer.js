@@ -3,7 +3,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import multer from "multer";
 
-const uploadDir = path.join(import.meta.dirname, "..", "uploads");
+export const uploadDir = path.join(import.meta.dirname, "..", "uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
