@@ -4,6 +4,7 @@
   "description": "A stripped down version of Google Drive.",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -39,5 +40,6 @@
   "devDependencies": {
     "nodemon": "^3.1.14",
     "prisma": "^7.10.1"
-  }
+  },
+    "engines": { "node": "24.21.0" }
 }

@@ -13,6 +13,10 @@ import { RULES, MAX_FILE_SIZE } from "./lib/upload-rules.js";
 import shareRouter from "./routes/share.js";
 
 const app = express();
+if (!process.env.SESSION_SECRET) throw new Error("SESSION_SECRET is not set");
+
+const isProd = process.env.NODE_ENV === "production";
+app.set("trust proxy", 1);
 app.locals.formatBytes = formatBytes;
 app.locals.uploadHint = `Allowed: ${Object.keys(RULES).map((e) => "." + e).join(", ")}. Max ${MAX_FILE_SIZE / 1024 / 1024} MB.`;
 app.locals.uploadAccept = Object.keys(RULES).map((e) => "." + e).join(",");
@@ -28,7 +32,12 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 },
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: isProd,
+    },
     store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000,
       dbRecordIdIsSessionId: true,
