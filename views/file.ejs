@@ -7,38 +7,58 @@
     <% } else { %>
         <a href="/upload">&larr; Back to uploads</a>
         <% } %>
+            <% if (error) { %>
+                <p style="color:red">
+                    <%= error %>
+                </p>
+                <% } %>
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <td>
+                                <%= file.name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Size</th>
+                            <td>
+                                <%= formatBytes(file.size) %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>
+                                <%= file.mimeType %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Uploaded</th>
+                            <td>
+                                <%= file.uploadedAt.toLocaleString() %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Folder</th>
+                            <td>
+                                <%= file.folder ? file.folder.name : "None" %>
+                            </td>
+                        </tr>
+                    </table>
+                    <h2>Move file</h2>
+                    <form action="/files/<%= file.id %>/move" method="POST">
+                        <select name="folderId">
+                            <option value="" <%=file.folderId===null ? "selected" : "" %>>No folder</option>
+                            <% folders.forEach((f)=> { %>
+                                <option value="<%= f.id %>" <%=file.folderId===f.id ? "selected" : "" %>>
+                                    <%= f.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                        <button>Move</button>
+                    </form>
 
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <td>
-                        <%= file.name %>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Size</th>
-                    <td>
-                        <%= formatBytes(file.size) %>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Type</th>
-                    <td>
-                        <%= file.mimeType %>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Uploaded</th>
-                    <td>
-                        <%= file.uploadedAt.toLocaleString() %>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Folder</th>
-                    <td>
-                        <%= file.folder ? file.folder.name : "None" %>
-                    </td>
-                </tr>
-            </table>
-
-            <p><a href="/files/<%= file.id %>/download"><button>Download</button></a></p>
+                    <p><a href="/files/<%= file.id %>/download"><button>Download</button></a></p>
+                    <form action="/files/<%= file.id %>/delete" method="POST"
+                        onsubmit="return confirm('Delete this file permanently?');">
+                        <button>Delete file</button>
+                    </form>

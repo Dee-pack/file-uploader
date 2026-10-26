@@ -30,6 +30,7 @@
     "express": "^5.3.0",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
+    "file-type": "^22.2.0",
     "multer": "^2.4.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

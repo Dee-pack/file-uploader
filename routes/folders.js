@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { ensureAuth } from "../middleware/auth.js";
-import { upload } from "../config/multer.js";
+import { uploadSingle } from "../config/multer.js";
 import { uploadFile, removeFiles } from "../lib/storage.js";
 import { prisma } from "../lib/prisma.js";
 
@@ -104,9 +104,10 @@ router.post("/folders/:id/delete", loadFolder, async (req, res) => {
     res.redirect("/folders");
 });
 
-// Upload into a folder: ownership is checked BEFORE multer saves anything
-router.post("/folders/:id/upload", loadFolder, upload.single("file"), async (req, res) => {
-    if (!req.file) return renderFolder(req, res, [{ msg: "Please choose a file." }], 400);
+router.post("/folders/:id/upload", loadFolder, uploadSingle, async (req, res) => {
+    if (req.uploadError || !req.file) {
+        return renderFolder(req, res, [{ msg: req.uploadError || "Please choose a file." }], 400);
+    }
 
     const storagePath = await uploadFile(req.user.id, req.file);
 
