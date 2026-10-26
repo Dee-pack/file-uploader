@@ -1,11 +1,13 @@
-<h1>Sign up</h1>
-<% errors.forEach((e)=> { %><p style="color:red">
-        <%= e.msg %>
-    </p>
-    <% }) %>
-        <form action="/sign-up" method="POST">
-            <input type="email" name="email" placeholder="Email" value="<%= email %>" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <input type="password" name="confirmPassword" placeholder="Confirm password" required />
-            <button>Create account</button>
-        </form>
+<%- include('partials/header', { title: "Sign up" }) %>
+    <div class="card card-narrow">
+        <h1>Create an account</h1>
+        <%- include('partials/errors') %>
+            <form class="stack" action="/sign-up" method="POST">
+                <input type="email" name="email" placeholder="Email" value="<%= email %>" required />
+                <input type="password" name="password" placeholder="Password (8+ characters)" required />
+                <input type="password" name="confirmPassword" placeholder="Confirm password" required />
+                <button class="btn btn-primary">Create account</button>
+            </form>
+            <p class="muted">Already registered? <a href="/login">Log in</a></p>
+    </div>
+    <%- include('partials/footer') %>

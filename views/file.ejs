@@ -1,24 +1,23 @@
-<h1>
-    <%= file.name %>
-</h1>
-
-<% if (file.folder) { %>
-    <a href="/folders/<%= file.folder.id %>">&larr; Back to <%= file.folder.name %></a>
-    <% } else { %>
-        <a href="/upload">&larr; Back to uploads</a>
-        <% } %>
-            <% if (error) { %>
-                <p style="color:red">
-                    <%= error %>
-                </p>
+<%- include('partials/header', { title: file.name }) %>
+    <div class="page-head">
+        <% if (file.folder) { %>
+            <a class="muted" href="/folders/<%= file.folder.id %>">&larr; Back to <%= file.folder.name %></a>
+            <% } else { %>
+                <a class="muted" href="/upload">&larr; Back to files</a>
                 <% } %>
+                    <h1 style="overflow-wrap:anywhere">
+                        <%= file.name %>
+                    </h1>
+    </div>
+    <% if (error) { %>
+        <div class="alert alert-error">
+            <%= error %>
+        </div>
+        <% } %>
+
+            <section class="card">
+                <div class="table-wrap">
                     <table>
-                        <tr>
-                            <th>Name</th>
-                            <td>
-                                <%= file.name %>
-                            </td>
-                        </tr>
                         <tr>
                             <th>Size</th>
                             <td>
@@ -33,9 +32,9 @@
                         </tr>
                         <tr>
                             <th>Uploaded</th>
-                            <td>
-                                <%= file.uploadedAt.toLocaleString() %>
-                            </td>
+                            <td><time class="local-time" datetime="<%= file.uploadedAt.toISOString() %>">
+                                    <%= file.uploadedAt.toISOString() %>
+                                </time></td>
                         </tr>
                         <tr>
                             <th>Folder</th>
@@ -44,21 +43,28 @@
                             </td>
                         </tr>
                     </table>
-                    <h2>Move file</h2>
-                    <form action="/files/<%= file.id %>/move" method="POST">
-                        <select name="folderId">
-                            <option value="" <%=file.folderId===null ? "selected" : "" %>>No folder</option>
-                            <% folders.forEach((f)=> { %>
-                                <option value="<%= f.id %>" <%=file.folderId===f.id ? "selected" : "" %>>
-                                    <%= f.name %>
-                                </option>
-                                <% }) %>
-                        </select>
-                        <button>Move</button>
-                    </form>
+                </div>
+                <p><a class="btn btn-primary" href="/files/<%= file.id %>/download">Download</a></p>
+            </section>
 
-                    <p><a href="/files/<%= file.id %>/download"><button>Download</button></a></p>
-                    <form action="/files/<%= file.id %>/delete" method="POST"
-                        onsubmit="return confirm('Delete this file permanently?');">
-                        <button>Delete file</button>
-                    </form>
+            <section class="card">
+                <h2>Move file</h2>
+                <form class="inline-form" action="/files/<%= file.id %>/move" method="POST">
+                    <select name="folderId" aria-label="Destination folder">
+                        <option value="" <%=file.folderId===null ? "selected" : "" %>>No folder</option>
+                        <% folders.forEach((f)=> { %>
+                            <option value="<%= f.id %>" <%=file.folderId===f.id ? "selected" : "" %>><%= f.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <button class="btn">Move</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Danger zone</h2>
+                <form action="/files/<%= file.id %>/delete" method="POST" data-confirm="Delete this file permanently?">
+                    <button class="btn btn-danger">Delete file</button>
+                </form>
+            </section>
+            <%- include('partials/footer') %>

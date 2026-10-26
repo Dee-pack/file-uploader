@@ -1,27 +1,26 @@
-<h1>Your folders</h1>
-<a href="/">Home</a>
-
-<% errors.forEach((e)=> { %><p style="color:red">
-        <%= e.msg %>
-    </p>
-    <% }) %>
-
-        <form action="/folders" method="POST">
-            <input type="text" name="name" placeholder="New folder name" maxlength="50" required />
-            <button>Create folder</button>
-        </form>
-
+<%- include('partials/header', { title: "Folders" }) %>
+    <div class="page-head">
+        <h1>Your folders</h1>
+    </div>
+    <%- include('partials/errors') %>
+        <section class="card">
+            <form class="inline-form" action="/folders" method="POST">
+                <input type="text" name="name" placeholder="New folder name" maxlength="50" required />
+                <button class="btn btn-primary">Create folder</button>
+            </form>
+        </section>
         <% if (folders.length===0) { %>
-            <p>No folders yet.</p>
+            <p class="empty">No folders yet. Create your first one above.</p>
             <% } else { %>
-                <ul>
+                <div class="grid">
                     <% folders.forEach((f)=> { %>
-                        <li>
-                            <a href="/folders/<%= f.id %>">
-                                <%= f.name %>
-                            </a>
-                            (<%= f._count.files %> files)
-                        </li>
+                        <a class="folder-card" href="/folders/<%= f.id %>">
+                            <strong>📁 <%= f.name %></strong>
+                            <span class="muted">
+                                <%= f._count.files %> file<%= f._count.files===1 ? "" : "s" %>
+                            </span>
+                        </a>
                         <% }) %>
-                </ul>
+                </div>
                 <% } %>
+                    <%- include('partials/footer') %>

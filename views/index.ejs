@@ -1,10 +1,24 @@
-<h1>File Uploader</h1>
-<% if (currentUser) { %>
-  <p>Signed in as <%= currentUser.email %>
-  </p>
-  <a href="/folders">My folders</a>
-  <a href="/upload">Upload files</a>
-  <form action="/logout" method="POST"><button>Log out</button></form>
-  <% } else { %>
-    <a href="/login">Log in</a> | <a href="/sign-up">Sign up</a>
-    <% } %>
+<%- include('partials/header', { title: "Home" }) %>
+  <% if (currentUser) { %>
+    <div class="page-head">
+      <h1>Welcome back</h1>
+      <p class="muted">
+        <%= currentUser.email %>
+      </p>
+    </div>
+    <div class="grid">
+      <a class="folder-card" href="/folders"><strong>📂 Folders</strong><span class="muted">Organize and
+          share</span></a>
+      <a class="folder-card" href="/upload"><strong>⬆️ Files</strong><span class="muted">Upload and manage</span></a>
+    </div>
+    <% } else { %>
+      <section class="hero">
+        <h1>Your files, in one place</h1>
+        <p>Upload files, organize them into folders, and share a folder with a link that expires.</p>
+        <div class="actions" style="justify-content:center">
+          <a class="btn btn-primary" href="/sign-up">Get started</a>
+          <a class="btn" href="/login">Log in</a>
+        </div>
+      </section>
+      <% } %>
+        <%- include('partials/footer') %>

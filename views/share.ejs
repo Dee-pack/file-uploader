@@ -1,31 +1,42 @@
-<h1>
-    <%= share.folder.name %>
-</h1>
-<p>Shared folder. This link expires <%= share.expiresAt.toLocaleString() %>.</p>
-
-<% if (files.length===0) { %>
-    <p>This folder is empty.</p>
-    <% } else { %>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Uploaded</th>
-                <th></th>
-            </tr>
-            <% files.forEach((f)=> { %>
-                <tr>
-                    <td>
-                        <%= f.name %>
-                    </td>
-                    <td>
-                        <%= formatBytes(f.size) %>
-                    </td>
-                    <td>
-                        <%= f.uploadedAt.toLocaleString() %>
-                    </td>
-                    <td><a href="/share/<%= share.id %>/files/<%= f.id %>/download">Download</a></td>
-                </tr>
-                <% }) %>
-        </table>
-        <% } %>
+<%- include('partials/header', { title: share.folder.name }) %>
+    <div class="page-head">
+        <h1>📁 <%= share.folder.name %>
+        </h1>
+        <p class="muted">Shared folder · link expires
+            <time class="local-time" datetime="<%= share.expiresAt.toISOString() %>">
+                <%= share.expiresAt.toISOString() %>
+            </time>
+        </p>
+    </div>
+    <section class="card">
+        <% if (files.length===0) { %>
+            <p class="empty">This folder is empty.</p>
+            <% } else { %>
+                <div class="table-wrap">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Uploaded</th>
+                            <th></th>
+                        </tr>
+                        <% files.forEach((f)=> { %>
+                            <tr>
+                                <td style="overflow-wrap:anywhere">
+                                    <%= f.name %>
+                                </td>
+                                <td>
+                                    <%= formatBytes(f.size) %>
+                                </td>
+                                <td><time class="local-time" datetime="<%= f.uploadedAt.toISOString() %>">
+                                        <%= f.uploadedAt.toISOString() %>
+                                    </time></td>
+                                <td><a class="btn btn-sm"
+                                        href="/share/<%= share.id %>/files/<%= f.id %>/download">Download</a></td>
+                            </tr>
+                            <% }) %>
+                    </table>
+                </div>
+                <% } %>
+    </section>
+    <%- include('partials/footer') %>

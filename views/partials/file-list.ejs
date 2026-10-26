@@ -1,0 +1,27 @@
+<% if (files.length===0) { %>
+    <p class="empty">No files here yet.</p>
+    <% } else { %>
+        <ul class="file-list">
+            <% files.forEach((f)=> { %>
+                <li class="file-row">
+                    <span class="badge">
+                        <%= f.name.includes(".") ? f.name.split(".").pop().slice(0, 4).toUpperCase() : "FILE" %>
+                    </span>
+                    <div class="file-info">
+                        <a href="/files/<%= f.id %>">
+                            <%= f.name %>
+                        </a>
+                        <span class="muted">
+                            <%= formatBytes(f.size) %> ·
+                                <time class="local-time" datetime="<%= f.uploadedAt.toISOString() %>">
+                                    <%= f.uploadedAt.toISOString() %>
+                                </time>
+                        </span>
+                    </div>
+                    <form action="/files/<%= f.id %>/delete" method="POST" data-confirm="Delete this file permanently?">
+                        <button class="btn btn-ghost btn-sm btn-danger-text">Delete</button>
+                    </form>
+                </li>
+                <% }) %>
+        </ul>
+        <% } %>

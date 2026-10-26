@@ -16,10 +16,12 @@ const app = express();
 app.locals.formatBytes = formatBytes;
 app.locals.uploadHint = `Allowed: ${Object.keys(RULES).map((e) => "." + e).join(", ")}. Max ${MAX_FILE_SIZE / 1024 / 1024} MB.`;
 app.locals.uploadAccept = Object.keys(RULES).map((e) => "." + e).join(",");
+app.locals.maxBytes = MAX_FILE_SIZE;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(import.meta.dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(import.meta.dirname, "public")));
 
 app.use(
   session({

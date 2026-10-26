@@ -1,37 +1,12 @@
-<h1>Upload a file</h1>
-<a href="/">Home</a>
-
-<% if (error) { %>
-    <p style="color:red">
-        <%= error %>
-    </p>
-    <% } %>
-
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept="<%= uploadAccept %>" required />
-            <button>Upload</button>
-            <p><small>
-                    <%= uploadHint %>
-                </small></p>
-            <button>Upload</button>
-        </form>
-
-        <h2>Your files</h2>
-        <% if (files.length===0) { %>
-            <p>No files yet.</p>
-            <% } else { %>
-                <ul>
-                    <% files.forEach((f)=> { %>
-                        <li>
-                            <a href="/files/<%= f.id %>">
-                                <%= f.name %>
-                            </a>
-                            (<%= formatBytes(f.size) %>)
-                                <form action="/files/<%= f.id %>/delete" method="POST" style="display:inline"
-                                    onsubmit="return confirm('Delete <%= f.name %>?');">
-                                    <button>Delete</button>
-                                </form>
-                        </li>
-                        <% }) %>
-                </ul>
-                <% } %>
+<%- include('partials/header', { title: "Files" }) %>
+    <div class="page-head">
+        <h1>Your files</h1>
+    </div>
+    <% if (error) { %>
+        <div class="alert alert-error">
+            <%= error %>
+        </div>
+        <% } %>
+            <section class="card"><%- include('partials/upload-form', { action: "/upload" }) %></section>
+            <section class="card"><%- include('partials/file-list', { files }) %></section>
+            <%- include('partials/footer') %>

@@ -1,84 +1,57 @@
-<h1>
-    <%= folder.name %>
-</h1>
-<a href="/folders">&larr; All folders</a>
+<%- include('partials/header', { title: folder.name }) %>
+    <div class="page-head">
+        <a class="muted" href="/folders">&larr; All folders</a>
+        <h1>📁 <%= folder.name %>
+        </h1>
+    </div>
+    <%- include('partials/errors') %>
 
-<% errors.forEach((e)=> { %><p style="color:red">
-        <%= e.msg %>
-    </p>
-    <% }) %>
+        <section class="card">
+            <h2>Upload a file</h2>
+            <%- include('partials/upload-form', { action: "/folders/" + folder.id + "/upload" }) %>
+        </section>
 
-        <h2>Rename</h2>
-        <form action="/folders/<%= folder.id %>/rename" method="POST">
-            <input type="text" name="name" value="<%= folder.name %>" maxlength="50" required />
-            <button>Rename</button>
-        </form>
+        <section class="card">
+            <h2>Files</h2>
+            <%- include('partials/file-list', { files }) %>
+        </section>
 
-        <h2>Upload a file</h2>
-        <form action="/folders/<%= folder.id %>/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept="<%= uploadAccept %>" required />
-            <button>Upload</button>
-            <p><small>
-                    <%= uploadHint %>
-                </small></p>
-            <button>Upload</button>
-        </form>
-
-        <h2>Share this folder</h2>
-        <p>Anyone with the link can view and download everything in this folder until it expires.</p>
-
-        <form action="/folders/<%= folder.id %>/share" method="POST">
-            <label>
-                Link lasts
-                <select name="duration">
-                    <% durations.forEach((d)=> { %>
-                        <option value="<%= d %>">
-                            <%= d %>
+        <section class="card">
+            <h2>Share this folder</h2>
+            <p class="muted">Anyone with the link can view and download everything in this folder until it expires.</p>
+            <form class="inline-form" action="/folders/<%= folder.id %>/share" method="POST">
+                <select name="duration" aria-label="Link duration">
+                    <% durations.forEach((d)=> { %><option value="<%= d %>">Lasts <%= d %>
                         </option>
                         <% }) %>
                 </select>
-            </label>
-            <button>Create share link</button>
-        </form>
+                <button class="btn btn-primary">Create share link</button>
+            </form>
+            <% shares.forEach((s)=> { %>
+                <div class="share-row">
+                    <input id="share-<%= s.id %>" type="text" readonly value="<%= baseUrl %>/share/<%= s.id %>" />
+                    <button type="button" class="btn" data-copy="#share-<%= s.id %>">Copy</button>
+                    <form action="/folders/<%= folder.id %>/shares/<%= s.id %>/revoke" method="POST"
+                        data-confirm="Revoke this link? It will stop working immediately.">
+                        <button class="btn btn-ghost btn-danger-text">Revoke</button>
+                    </form>
+                    <span class="muted">expires <time class="local-time" datetime="<%= s.expiresAt.toISOString() %>">
+                            <%= s.expiresAt.toISOString() %>
+                        </time></span>
+                </div>
+                <% }) %>
+        </section>
 
-        <% if (shares.length> 0) { %>
-            <ul>
-                <% shares.forEach((s)=> { %>
-                    <li>
-                        <input type="text" readonly size="60" onclick="this.select()"
-                            value="<%= baseUrl %>/share/<%= s.id %>" />
-                        expires <%= s.expiresAt.toLocaleString() %>
-                            <form action="/folders/<%= folder.id %>/shares/<%= s.id %>/revoke" method="POST"
-                                style="display:inline">
-                                <button>Revoke</button>
-                            </form>
-                    </li>
-                    <% }) %>
-            </ul>
-            <% } %>
-
-                <h2>Files</h2>
-                <% if (files.length===0) { %>
-                    <p>This folder is empty.</p>
-                    <% } else { %>
-                        <ul>
-                            <% files.forEach((f)=> { %>
-                                <li>
-                                    <a href="/files/<%= f.id %>">
-                                        <%= f.name %>
-                                    </a>
-                                    (<%= formatBytes(f.size) %>)
-                                        <form action="/files/<%= f.id %>/delete" method="POST" style="display:inline"
-                                            onsubmit="return confirm('Delete <%= f.name %>?');">
-                                            <button>Delete</button>
-                                        </form>
-                                </li>
-                                <% }) %>
-                        </ul>
-                        <% } %>
-
-                            <h2>Delete folder</h2>
-                            <form action="/folders/<%= folder.id %>/delete" method="POST"
-                                onsubmit="return confirm('Delete this folder and all its files?');">
-                                <button>Delete folder</button>
-                            </form>
+        <section class="card">
+            <h2>Folder settings</h2>
+            <form class="inline-form" action="/folders/<%= folder.id %>/rename" method="POST">
+                <input type="text" name="name" value="<%= folder.name %>" maxlength="50" required />
+                <button class="btn">Rename</button>
+            </form>
+            <hr style="border:0;border-top:1px solid var(--border);margin:1rem 0" />
+            <form action="/folders/<%= folder.id %>/delete" method="POST"
+                data-confirm="Delete this folder and all its files? This can't be undone.">
+                <button class="btn btn-danger">Delete folder</button>
+            </form>
+        </section>
+        <%- include('partials/footer') %>

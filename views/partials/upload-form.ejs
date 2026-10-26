@@ -1,0 +1,11 @@
+<form class="dropzone-form" action="<%= action %>" method="POST" enctype="multipart/form-data" data-upload>
+    <label class="dropzone">
+        <input type="file" name="file" accept="<%= uploadAccept %>" data-max-bytes="<%= maxBytes %>" required />
+        <strong>Drop a file here or click to browse</strong>
+        <span class="muted" data-file-label>
+            <%= uploadHint %>
+        </span>
+    </label>
+    <p class="field-error" data-file-error hidden></p>
+    <div><button class="btn btn-primary">Upload</button></div>
+</form>

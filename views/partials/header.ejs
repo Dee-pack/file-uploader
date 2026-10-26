@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        <%= locals.title ? locals.title + " · " : "" %>File Uploader
+    </title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/app.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="/">📁 File Uploader</a>
+            <nav class="nav">
+                <% if (locals.currentUser) { %>
+                    <a href="/folders">Folders</a>
+                    <a href="/upload">Files</a>
+                    <form action="/logout" method="POST"><button class="btn btn-ghost btn-sm">Log out</button></form>
+                    <% } else { %>
+                        <a href="/login">Log in</a>
+                        <a class="btn btn-primary btn-sm" href="/sign-up">Sign up</a>
+                        <% } %>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
