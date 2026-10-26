@@ -1,0 +1,31 @@
+<h1>
+    <%= share.folder.name %>
+</h1>
+<p>Shared folder. This link expires <%= share.expiresAt.toLocaleString() %>.</p>
+
+<% if (files.length===0) { %>
+    <p>This folder is empty.</p>
+    <% } else { %>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Uploaded</th>
+                <th></th>
+            </tr>
+            <% files.forEach((f)=> { %>
+                <tr>
+                    <td>
+                        <%= f.name %>
+                    </td>
+                    <td>
+                        <%= formatBytes(f.size) %>
+                    </td>
+                    <td>
+                        <%= f.uploadedAt.toLocaleString() %>
+                    </td>
+                    <td><a href="/share/<%= share.id %>/files/<%= f.id %>/download">Download</a></td>
+                </tr>
+                <% }) %>
+        </table>
+        <% } %>

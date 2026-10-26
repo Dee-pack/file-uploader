@@ -10,6 +10,7 @@ import filesRouter from "./routes/files.js";
 import foldersRouter from "./routes/folders.js";
 import { formatBytes } from "./lib/format.js";
 import { RULES, MAX_FILE_SIZE } from "./lib/upload-rules.js";
+import shareRouter from "./routes/share.js";
 
 const app = express();
 app.locals.formatBytes = formatBytes;
@@ -43,7 +44,8 @@ app.use((req, res, next) => {
 
 app.use(authRouter);
 app.use(filesRouter);
-app.use(foldersRouter);
+app.use(shareRouter);
+app.use(foldersRouter)
 
 app.get("/", (req, res) => {
   res.render("index");

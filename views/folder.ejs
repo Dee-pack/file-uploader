@@ -24,28 +24,61 @@
             <button>Upload</button>
         </form>
 
-        <h2>Files</h2>
-        <% if (files.length===0) { %>
-            <p>This folder is empty.</p>
-            <% } else { %>
-                <ul>
-                    <% files.forEach((f)=> { %>
-                        <li>
-                            <a href="/files/<%= f.id %>">
-                                <%= f.name %>
-                            </a>
-                            (<%= formatBytes(f.size) %>)
-                                <form action="/files/<%= f.id %>/delete" method="POST" style="display:inline"
-                                    onsubmit="return confirm('Delete <%= f.name %>?');">
-                                    <button>Delete</button>
-                                </form>
-                        </li>
-                        <% }) %>
-                </ul>
-                <% } %>
+        <h2>Share this folder</h2>
+        <p>Anyone with the link can view and download everything in this folder until it expires.</p>
 
-                    <h2>Delete folder</h2>
-                    <form action="/folders/<%= folder.id %>/delete" method="POST"
-                        onsubmit="return confirm('Delete this folder and all its files?');">
-                        <button>Delete folder</button>
-                    </form>
+        <form action="/folders/<%= folder.id %>/share" method="POST">
+            <label>
+                Link lasts
+                <select name="duration">
+                    <% durations.forEach((d)=> { %>
+                        <option value="<%= d %>">
+                            <%= d %>
+                        </option>
+                        <% }) %>
+                </select>
+            </label>
+            <button>Create share link</button>
+        </form>
+
+        <% if (shares.length> 0) { %>
+            <ul>
+                <% shares.forEach((s)=> { %>
+                    <li>
+                        <input type="text" readonly size="60" onclick="this.select()"
+                            value="<%= baseUrl %>/share/<%= s.id %>" />
+                        expires <%= s.expiresAt.toLocaleString() %>
+                            <form action="/folders/<%= folder.id %>/shares/<%= s.id %>/revoke" method="POST"
+                                style="display:inline">
+                                <button>Revoke</button>
+                            </form>
+                    </li>
+                    <% }) %>
+            </ul>
+            <% } %>
+
+                <h2>Files</h2>
+                <% if (files.length===0) { %>
+                    <p>This folder is empty.</p>
+                    <% } else { %>
+                        <ul>
+                            <% files.forEach((f)=> { %>
+                                <li>
+                                    <a href="/files/<%= f.id %>">
+                                        <%= f.name %>
+                                    </a>
+                                    (<%= formatBytes(f.size) %>)
+                                        <form action="/files/<%= f.id %>/delete" method="POST" style="display:inline"
+                                            onsubmit="return confirm('Delete <%= f.name %>?');">
+                                            <button>Delete</button>
+                                        </form>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <% } %>
+
+                            <h2>Delete folder</h2>
+                            <form action="/folders/<%= folder.id %>/delete" method="POST"
+                                onsubmit="return confirm('Delete this folder and all its files?');">
+                                <button>Delete folder</button>
+                            </form>
